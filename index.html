@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BiteBoard | Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+--bg-main:#0b0a09;
+--bg-soft:#141210;
+--card-bg:#1c1a18;
+--accent:#3cbf91;
+--accent-dark:#247a5b;
+--text-light:#f5f5f5;
+--text-muted:#bfbfbf;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:var(--bg-main);
+color:var(--text-light);
+}
+
+.navbar{
+background:var(--bg-soft);
+padding:18px 60px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.nav-left h2{
+font-weight:600;
+letter-spacing:1px;
+}
+
+.nav-links{
+display:flex;
+gap:30px;
+}
+
+.nav-links a{
+text-decoration:none;
+color:var(--text-light);
+font-size:14px;
+transition:0.3s;
+cursor:pointer;
+}
+
+.nav-links a:hover{
+color:var(--accent);
+}
+
+.login-hero{
+position:relative;
+min-height:85vh;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+}
+
+.login-hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:url("https://images.unsplash.com/photo-1550547660-d9450f859349") center/cover no-repeat;
+filter:blur(30px);
+transform:scale(1.1);
+opacity:0.35;
+z-index:0;
+}
+
+.login-hero::after{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(to right,#141210,#0b0a09);
+opacity:0.85;
+z-index:1;
+}
+
+.login-card{
+position:relative;
+z-index:2;
+background:var(--card-bg);
+padding:50px 40px;
+border-radius:18px;
+width:380px;
+text-align:center;
+}
+
+.login-card h2{
+margin-bottom:25px;
+}
+
+.login-card input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:none;
+background:#2a2724;
+color:white;
+font-size:14px;
+margin-bottom:20px;
+outline:none;
+}
+
+.login-card input:focus{
+box-shadow:0 0 0 2px var(--accent);
+}
+
+.role-toggle{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-bottom:20px;
+}
+
+.role-btn{
+padding:6px 14px;
+border-radius:20px;
+border:1px solid var(--accent);
+background:transparent;
+color:var(--accent);
+font-size:12px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.role-btn.active{
+background:var(--accent);
+color:black;
+}
+
+.primary-btn{
+background:var(--accent);
+padding:10px 20px;
+border:none;
+border-radius:20px;
+color:white;
+font-size:14px;
+cursor:pointer;
+transition:0.3s;
+width:100%;
+}
+
+.primary-btn:hover{
+background:var(--accent-dark);
+}
+
+footer{
+background:var(--bg-soft);
+padding:30px;
+text-align:center;
+font-size:13px;
+color:var(--text-muted);
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+<div class="nav-left">
+<h2>BiteBoard</h2>
+</div>
+
+<div class="nav-links">
+<a href="home.html">Home</a>
+<a href="posts.html">Feed</a>
+<a onclick="goAdmin()">Admin</a>
+</div>
+</header>
+
+<section class="login-hero">
+
+<div class="login-card">
+
+<h2>Login to BiteBoard</h2>
+
+<div class="role-toggle">
+<button class="role-btn active" id="studentBtn" onclick="setRole('student')">Student</button>
+<button class="role-btn" id="adminBtn" onclick="setRole('admin')">Admin</button>
+</div>
+
+<input type="text" id="userId" placeholder="Student ID / Register Number">
+
+<button class="primary-btn" onclick="login()">Login</button>
+
+</div>
+
+</section>
+
+<footer>
+© 2026 BiteBoard | Campus Dining Network
+</footer>
+
+<script>
+
+let role="student";
+
+function setRole(selected){
+role=selected;
+document.getElementById("studentBtn").classList.remove("active");
+document.getElementById("adminBtn").classList.remove("active");
+if(role==="student"){
+document.getElementById("studentBtn").classList.add("active");
+}else{
+document.getElementById("adminBtn").classList.add("active");
+}
+}
+
+function login(){
+
+let id=document.getElementById("userId").value.trim();
+
+if(id===""){
+alert("Please enter your ID");
+return;
+}
+
+if(role==="admin"){
+let password = prompt("Enter Admin Password");
+if(password !== "2005"){
+alert("Incorrect Admin Password");
+return;
+}
+}
+
+localStorage.setItem("currentUser",id);
+localStorage.setItem("role",role);
+
+if(role==="admin"){
+window.location.href="admin.html";
+}else{
+window.location.href="home.html";
+}
+
+}
+
+function goAdmin(){
+let role = localStorage.getItem("role");
+if(role==="admin"){
+window.location.href="admin.html";
+}else{
+alert("Admin access only. Please login as Admin.");
+window.location.href="index.html";
+}
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BiteBoard | Canteen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+--bg:#0b0a09;
+--soft:#141210;
+--card:#1c1a18;
+--accent:#3cbf91;
+--danger:#ff5c5c;
+--text:#f5f5f5;
+--muted:#bfbfbf;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+
+body{background:var(--bg);color:var(--text);}
+
+/* NAVBAR */
+
+.navbar{
+background:var(--soft);
+padding:18px 60px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.navbar a{
+color:white;
+text-decoration:none;
+margin-left:25px;
+font-size:14px;
+}
+
+/* HERO */
+
+.hero{
+padding:60px 20px;
+text-align:center;
+background:linear-gradient(135deg,#141210,#0b0a09);
+}
+
+.hero h1{font-size:44px;}
+.hero p{color:var(--accent);letter-spacing:3px;margin-top:6px;}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+gap:40px;
+padding:60px;
+align-items:flex-start;
+}
+
+.left{flex:2;}
+.right{flex:1;}
+
+/* CARD */
+
+.card{
+background:var(--card);
+padding:30px;
+border-radius:18px;
+margin-bottom:30px;
+}
+
+/* SUMMARY */
+
+.rating-summary{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.rating-summary h2{
+font-size:34px;
+color:var(--accent);
+}
+
+/* INPUTS */
+
+textarea,input,select{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:none;
+background:#2a2724;
+color:white;
+font-size:14px;
+}
+
+select{
+cursor:pointer;
+}
+
+button{
+background:var(--accent);
+border:none;
+padding:8px 18px;
+border-radius:20px;
+color:white;
+margin-top:12px;
+cursor:pointer;
+}
+
+/* STARS */
+
+.stars span{
+font-size:26px;
+cursor:pointer;
+}
+
+.active{color:var(--accent);}
+
+/* ANON TOGGLE */
+
+.toggle{
+display:inline-block;
+padding:6px 14px;
+border-radius:20px;
+background:#2a2724;
+margin-top:10px;
+cursor:pointer;
+font-size:12px;
+}
+
+.toggle.active{
+background:var(--accent);
+color:black;
+}
+
+/* REVIEW */
+
+.review{
+border-top:1px solid #333;
+padding-top:15px;
+margin-top:15px;
+}
+
+.review small{color:var(--muted);}
+
+.problem-tag{
+background:var(--danger);
+padding:4px 8px;
+border-radius:10px;
+font-size:11px;
+margin-left:10px;
+}
+
+/* MOMENTS */
+
+.moment{
+border-bottom:1px solid #333;
+padding:10px 0;
+}
+
+.reactions span{
+cursor:pointer;
+margin-right:8px;
+font-size:18px;
+}
+
+.preview-img{
+width:100%;
+margin-top:10px;
+border-radius:12px;
+}
+
+.hero-brand{
+position:absolute;
+top:85px;
+left:60px;
+font-size:12px;
+letter-spacing:2px;
+color:var(--accent);
+font-weight:600;
+z-index:3;
+opacity:0.9;
+}
+
+.hero-brand::after{
+content:"";
+display:block;
+width:50px;
+height:2px;
+background:var(--accent);
+margin-top:6px;
+}
+</style>
+</head>
+<body>
+
+<header class="navbar">
+<h2>BiteBoard</h2>
+<div class="nav-links">
+<a href="home.html">Home</a>
+<a href="posts.html">Feed</a>
+<a href="#canteens">Canteens</a>
+<a onclick="goAdmin()">Admin</a>
+</div>
+</header>
+
+<section class="hero">
+<h1 id="messName"></h1>
+<p>EAT • RATE • RELATE</p>
+<div class="hero-brand">
+Hungry for change?
+</div>
+</section>
+
+<div class="container">
+
+<!-- LEFT SIDE -->
+<div class="left">
+
+<!-- SUMMARY -->
+<div class="card rating-summary">
+<div>
+<h2 id="avgRating">0.0 ★</h2>
+<p><span id="reviewCount">0</span> Reviews</p>
+</div>
+<div id="problemIndicator"></div>
+</div>
+
+<!-- SUBMIT REVIEW -->
+<div class="card">
+<h3>Submit Feedback</h3>
+
+<input type="text" id="username" placeholder="Your Name">
+
+<div id="anonToggle" class="toggle" onclick="toggleAnon()">Post Anonymously</div>
+
+<select id="category">
+<option value="">Select Category</option>
+<option>Food Quality</option>
+<option>Cleanliness</option>
+<option>Service Speed</option>
+<option>Staff Behaviour</option>
+<option>Ambience</option>
+</select>
+
+<div class="stars">
+<span onclick="rate(1)">★</span>
+<span onclick="rate(2)">★</span>
+<span onclick="rate(3)">★</span>
+<span onclick="rate(4)">★</span>
+<span onclick="rate(5)">★</span>
+</div>
+
+<textarea id="reviewText" rows="3" placeholder="Write your feedback..."></textarea>
+
+<button onclick="submitReview()">Submit Feedback</button>
+</div>
+
+<!-- REVIEW LIST -->
+<div class="card">
+<h3>Recent Reviews</h3>
+<div id="reviewList"></div>
+</div>
+
+</div>
+
+<!-- RIGHT SIDE -->
+<div class="right">
+
+<div class="card">
+<h3>Campus Moments</h3>
+
+<textarea id="momentText" rows="2" placeholder="Share a happy moment 😊"></textarea>
+
+<div class="reactions">
+<span onclick="addEmoji('😊')">😊</span>
+<span onclick="addEmoji('🔥')">🔥</span>
+<span onclick="addEmoji('❤️')">❤️</span>
+<span onclick="addEmoji('👏')">👏</span>
+<span onclick="addEmoji('🎉')">🎉</span>
+<span onclick="addEmoji('😋')">😋</span>
+<span onclick="addEmoji('🤩')">🤩</span>
+<span onclick="addEmoji('👍')">👍</span>
+</div>
+
+<input type="file" id="imageUpload" accept="image/*">
+
+<img id="preview" class="preview-img" style="display:none;">
+
+<button onclick="submitMoment()">Post Moment</button>
+
+<div id="momentList"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const mess = localStorage.getItem("selectedMess");
+document.getElementById("messName").innerText = mess;
+
+let selectedRating=0;
+let isAnon=false;
+
+function rate(n){
+selectedRating=n;
+let stars=document.querySelectorAll(".stars span");
+stars.forEach((s,i)=> s.classList.toggle("active",i<n));
+}
+
+function toggleAnon(){
+isAnon=!isAnon;
+document.getElementById("anonToggle").classList.toggle("active");
+}
+
+function submitReview(){
+
+let text=document.getElementById("reviewText").value;
+let name=document.getElementById("username").value || "Student";
+let category=document.getElementById("category").value;
+
+if(text===""||selectedRating===0||category===""){
+alert("Please complete all fields");
+return;
+}
+
+let data=JSON.parse(localStorage.getItem("reviews"))||[];
+
+let review={
+mess:mess,
+name:isAnon?"Anonymous":name,
+rating:selectedRating,
+category:category,
+text:text,
+type:"review",
+date:new Date().toLocaleString(),
+problem:selectedRating<=2
+};
+
+data.push(review);
+localStorage.setItem("reviews",JSON.stringify(data));
+
+location.reload();
+}
+
+function submitMoment(){
+
+let text=document.getElementById("momentText").value;
+let file=document.getElementById("imageUpload").files[0];
+
+if(text===""){alert("Write something");return;}
+
+let reader=new FileReader();
+
+reader.onload=function(){
+let data=JSON.parse(localStorage.getItem("reviews"))||[];
+
+data.push({
+mess:mess,
+text:text,
+image:reader.result || null,
+type:"moment",
+date:new Date().toLocaleString()
+});
+
+localStorage.setItem("reviews",JSON.stringify(data));
+window.location.href="posts.html";
+};
+
+if(file){
+reader.readAsDataURL(file);
+}else{
+reader.onload();
+}
+
+}
+
+function addEmoji(e){
+document.getElementById("momentText").value+=e;
+}
+
+function loadData(){
+
+let data=JSON.parse(localStorage.getItem("reviews"))||[];
+
+let reviews=data.filter(r=>r.mess===mess && r.type==="review");
+
+document.getElementById("reviewCount").innerText=reviews.length;
+
+if(reviews.length>0){
+let avg=reviews.reduce((a,b)=>a+b.rating,0)/reviews.length;
+document.getElementById("avgRating").innerText=avg.toFixed(1)+" ★";
+if(avg<2.5){
+document.getElementById("problemIndicator").innerHTML='<span class="problem-tag">Under Review</span>';
+}
+}
+
+let list=document.getElementById("reviewList");
+
+reviews.slice().reverse().forEach(r=>{
+let div=document.createElement("div");
+div.className="review";
+div.innerHTML=`
+<strong>${r.name}</strong> (${r.category}) ${"★".repeat(r.rating)}
+<p>${r.text}</p>
+<small>${r.date}</small>
+${r.problem?'<span class="problem-tag">Issue Reported</span>':''}
+`;
+list.appendChild(div);
+});
+
+let moments=data.filter(r=>r.mess===mess && r.type==="moment");
+let momentList=document.getElementById("momentList");
+
+moments.slice().reverse().forEach(m=>{
+let div=document.createElement("div");
+div.className="moment";
+div.innerHTML=`
+<p>${m.text}</p>
+${m.image?`<img src="${m.image}" class="preview-img">`:""}
+<small>${m.date}</small>
+`;
+momentList.appendChild(div);
+});
+
+}
+
+document.getElementById("imageUpload").addEventListener("change",function(e){
+let reader=new FileReader();
+reader.onload=function(){
+let preview=document.getElementById("preview");
+preview.src=reader.result;
+preview.style.display="block";
+};
+reader.readAsDataURL(e.target.files[0]);
+});
+
+loadData();
+
+</script>
+
+</body>
+</html>

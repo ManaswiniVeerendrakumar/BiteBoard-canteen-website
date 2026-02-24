@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BiteBoard | Campus Social</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+--bg:#0f0e0d;
+--soft:#171513;
+--card:#1f1c19;
+--accent:#3cbf91;
+--accent-glow:rgba(60,191,145,0.25);
+--text:#f5f5f5;
+--muted:#a5a5a5;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+body{background:linear-gradient(to bottom,#0f0e0d,#151311);color:var(--text);}
+
+/* NAVBAR */
+
+.navbar{
+background:var(--soft);
+padding:20px 80px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.navbar a{
+color:white;
+text-decoration:none;
+margin-left:30px;
+font-size:14px;
+opacity:0.8;
+}
+
+.navbar a:hover{color:var(--accent);opacity:1;}
+
+/* LAYOUT */
+
+.main{
+max-width:1200px;
+margin:60px auto;
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:60px;
+align-items:start;
+}
+
+/* FEED */
+
+.feed{
+display:flex;
+flex-direction:column;
+gap:35px;
+}
+
+/* POST CARD */
+
+.post-card{
+background:var(--card);
+padding:24px;
+border-radius:24px;
+box-shadow:0 0 25px rgba(0,0,0,0.5);
+transition:0.3s;
+}
+
+.post-card:hover{
+box-shadow:0 0 30px var(--accent-glow);
+transform:translateY(-4px);
+}
+
+.post-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:12px;
+}
+
+.badge{
+background:var(--accent);
+color:black;
+padding:5px 14px;
+border-radius:20px;
+font-size:11px;
+font-weight:600;
+}
+
+/* IMAGE */
+
+.image-frame{
+background:#111;
+border-radius:18px;
+padding:10px;
+margin-top:14px;
+}
+
+.image-frame img{
+width:100%;
+max-height:420px;
+object-fit:contain;
+border-radius:14px;
+}
+
+/* REACTIONS */
+
+.reactions{
+margin-top:16px;
+display:flex;
+gap:20px;
+}
+
+.reaction{
+cursor:pointer;
+display:flex;
+align-items:center;
+gap:6px;
+opacity:0.8;
+transition:0.2s;
+}
+
+.reaction:hover{
+opacity:1;
+transform:scale(1.15);
+}
+
+/* RIGHT PANEL */
+
+.side-panel{
+display:flex;
+flex-direction:column;
+gap:30px;
+}
+
+/* GOSSIP */
+
+.gossip{
+background:linear-gradient(135deg,#1c1916,#151311);
+padding:25px;
+border-radius:24px;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+max-height:420px;
+display:flex;
+flex-direction:column;
+}
+
+.gossip h3{
+margin-bottom:15px;
+}
+
+.gossip textarea{
+width:100%;
+padding:10px;
+border-radius:14px;
+border:none;
+background:#2a2724;
+color:white;
+margin-bottom:12px;
+resize:none;
+}
+
+.gossip button{
+background:var(--accent);
+border:none;
+padding:6px 16px;
+border-radius:18px;
+cursor:pointer;
+}
+
+/* Scrollable Gossip Feed */
+
+#gossipFeed{
+margin-top:12px;
+overflow-y:auto;
+max-height:220px;
+padding-right:6px;
+}
+
+#gossipFeed::-webkit-scrollbar{
+width:6px;
+}
+
+#gossipFeed::-webkit-scrollbar-thumb{
+background:var(--accent);
+border-radius:10px;
+}
+
+.gossip-post{
+margin-top:12px;
+padding-top:10px;
+border-top:1px solid #333;
+font-size:13px;
+color:var(--muted);
+}
+
+/* FEEDBACK PANEL */
+
+.feedback{
+background:var(--card);
+padding:25px;
+border-radius:24px;
+max-height:420px;
+display:flex;
+flex-direction:column;
+}
+
+.feedback h3{
+margin-bottom:12px;
+}
+
+.dropdown-btn{
+cursor:pointer;
+color:var(--accent);
+font-size:13px;
+margin-bottom:12px;
+}
+
+/* Scrollable Feedback List */
+
+#feedbackList{
+display:none;
+overflow-y:auto;
+max-height:250px;
+padding-right:6px;
+}
+
+#feedbackList::-webkit-scrollbar{
+width:6px;
+}
+
+#feedbackList::-webkit-scrollbar-thumb{
+background:var(--accent);
+border-radius:10px;
+}
+
+.feedback-card{
+background:#161412;
+padding:12px;
+border-radius:12px;
+margin-bottom:10px;
+font-size:13px;
+color:var(--muted);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+.main{
+grid-template-columns:1fr;
+}
+}
+
+.hero-brand{
+position:absolute;
+top:85px;
+left:60px;
+font-size:12px;
+letter-spacing:2px;
+color:var(--accent);
+font-weight:600;
+z-index:3;
+opacity:0.9;
+}
+
+.hero-brand::after{
+content:"";
+display:block;
+width:50px;
+height:2px;
+background:var(--accent);
+margin-top:6px;
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+<h2>BiteBoard</h2>
+<div class="nav-links">
+<a href="home.html">Home</a>
+<a href="posts.html">Feed</a>
+<a href="#canteens">Canteens</a>
+<a onclick="goAdmin()">Admin</a>
+</div>
+</header>
+<div class="hero-brand">
+Dine. Decide. Deliver
+</div>
+<div class="main">
+
+<!-- LEFT: POSTS FEED -->
+<div class="feed" id="momentFeed"></div>
+
+<!-- RIGHT: GOSSIP + FEEDBACK -->
+<div class="side-panel">
+
+<div class="gossip">
+<h3>🔥 Gossip Corner</h3>
+<textarea id="gossipText" rows="2" placeholder="Post anonymously..."></textarea>
+<button onclick="postGossip()">Post</button>
+<div id="gossipFeed"></div>
+</div>
+
+<div class="feedback">
+<h3>📋 Feedback Reports</h3>
+<div class="dropdown-btn" onclick="toggleFeedback()">View Feedback</div>
+<div id="feedbackList"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let data = JSON.parse(localStorage.getItem("reviews")) || [];
+let gossipData = JSON.parse(localStorage.getItem("gossips")) || [];
+
+let moments = data.filter(d=>d.type==="moment");
+let feed = document.getElementById("momentFeed");
+
+moments.slice().reverse().forEach((m,i)=>{
+
+m.likes = m.likes || 0;
+
+let div=document.createElement("div");
+div.className="post-card";
+
+div.innerHTML=`
+<div class="post-header">
+<strong>${m.mess}</strong>
+<span class="badge">Moment</span>
+</div>
+
+<p>${m.text}</p>
+
+${m.image?`<div class="image-frame"><img src="${m.image}"></div>`:""}
+
+<div class="reactions">
+<div class="reaction" onclick="like(${i})">❤️ <span>${m.likes}</span></div>
+<div class="reaction">🔥</div>
+<div class="reaction">😂</div>
+<div class="reaction">👏</div>
+</div>
+
+<small style="color:var(--muted);font-size:11px;">${m.date}</small>
+`;
+
+feed.appendChild(div);
+
+});
+
+function like(index){
+moments[index].likes++;
+localStorage.setItem("reviews",JSON.stringify(data));
+location.reload();
+}
+
+/* Gossip */
+
+let gossipFeed=document.getElementById("gossipFeed");
+
+gossipData.slice().reverse().forEach(g=>{
+let div=document.createElement("div");
+div.className="gossip-post";
+div.innerText="• "+g.text;
+gossipFeed.appendChild(div);
+});
+
+function postGossip(){
+let text=document.getElementById("gossipText").value;
+if(!text)return;
+gossipData.push({text:text});
+localStorage.setItem("gossips",JSON.stringify(gossipData));
+location.reload();
+}
+
+/* Feedback */
+
+let feedbacks=data.filter(d=>d.type==="review");
+let feedbackList=document.getElementById("feedbackList");
+
+feedbacks.forEach(f=>{
+let div=document.createElement("div");
+div.className="feedback-card";
+div.innerHTML=`
+<strong>${f.mess}</strong> (${f.category}) - ${"★".repeat(f.rating)}
+<p>${f.text}</p>
+`;
+feedbackList.appendChild(div);
+});
+
+function toggleFeedback(){
+let list=document.getElementById("feedbackList");
+
+if(list.style.display==="block"){
+list.style.display="none";
+}else{
+list.style.display="block";
+}
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BiteBoard | Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+--bg:#0b0a09;
+--soft:#141210;
+--card:#1c1a18;
+--accent:#3cbf91;
+--danger:#ff5c5c;
+--warning:#ffb347;
+--text:#f5f5f5;
+--muted:#bfbfbf;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+body{background:var(--bg);color:var(--text);}
+
+/* NAVBAR */
+
+.navbar{
+background:var(--soft);
+padding:18px 60px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.navbar a{
+color:white;
+text-decoration:none;
+margin-left:25px;
+font-size:14px;
+}
+
+/* LAYOUT */
+
+.container{
+padding:60px;
+}
+
+/* STATS */
+
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:30px;
+margin-bottom:40px;
+}
+
+.stat-card{
+background:var(--card);
+padding:30px;
+border-radius:18px;
+transition:0.3s;
+}
+
+.stat-card:hover{
+box-shadow:0 0 20px rgba(60,191,145,0.2);
+}
+
+/* ALERTS */
+
+.alert{
+background:var(--danger);
+padding:10px 15px;
+border-radius:12px;
+font-size:13px;
+margin-bottom:10px;
+}
+
+/* FILTERS */
+
+.filters{
+margin-bottom:30px;
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+}
+
+select,input{
+padding:8px 12px;
+border-radius:10px;
+border:none;
+background:#2a2724;
+color:white;
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+background:var(--card);
+border-radius:18px;
+overflow:hidden;
+}
+
+th,td{
+padding:15px;
+text-align:left;
+font-size:14px;
+border-bottom:1px solid #333;
+}
+
+th{background:var(--soft);}
+
+.problem-tag{
+background:var(--danger);
+padding:4px 8px;
+border-radius:10px;
+font-size:11px;
+}
+
+.highlight{
+background:rgba(255,92,92,0.08);
+}
+
+button{
+background:var(--accent);
+border:none;
+padding:6px 14px;
+border-radius:15px;
+color:white;
+cursor:pointer;
+font-size:12px;
+margin-right:5px;
+transition:0.2s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+.empty{
+text-align:center;
+padding:30px;
+color:var(--muted);
+}
+
+</style>
+</head>
+<body>
+
+<header class="navbar">
+<h1>Admin Dashboard</h1>
+<h2>BiteBoard</h2>
+<div class="nav-links">
+<a href="home.html">Home</a>
+<a href="posts.html">Feed</a>
+<a href="#canteens">Canteens</a>
+<a onclick="goAdmin()">Admin</a>
+</div>
+</header>
+
+<div class="container">
+
+<!-- STATS -->
+<div class="stats">
+<div class="stat-card">
+<h2 id="totalReviews">0</h2>
+<p>Total Reviews</p>
+</div>
+
+<div class="stat-card">
+<h2 id="totalMoments">0</h2>
+<p>Total Moments</p>
+</div>
+
+<div class="stat-card">
+<h2 id="problemCount">0</h2>
+<p>Under Review Alerts</p>
+</div>
+
+<div class="stat-card">
+<h2 id="avgCampus">0.0 ★</h2>
+<p>Campus Average Rating</p>
+</div>
+</div>
+
+<!-- ALERTS -->
+<div id="alertPanel"></div>
+
+<!-- FILTERS -->
+<div class="filters">
+<input type="text" id="searchInput" placeholder="Search by name or comment...">
+
+<select id="filterMess">
+<option value="">All Canteens</option>
+</select>
+
+<select id="filterCategory">
+<option value="">All Categories</option>
+<option>Food Quality</option>
+<option>Cleanliness</option>
+<option>Service Speed</option>
+<option>Staff Behaviour</option>
+<option>Ambience</option>
+</select>
+
+<select id="filterProblem">
+<option value="">All Status</option>
+<option value="true">Under Review</option>
+<option value="false">Normal</option>
+</select>
+</div>
+
+<!-- TABLE -->
+<table>
+<thead>
+<tr>
+<th>Canteen</th>
+<th>Name</th>
+<th>Category</th>
+<th>Rating</th>
+<th>Comment</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="adminTable"></tbody>
+</table>
+
+</div>
+
+<script>
+let role = localStorage.getItem("role");
+
+if(role !== "admin"){
+alert("Unauthorized access. Please login as Admin.");
+window.location.href = "index.html";
+}
+/* ================= DATA ================= */
+
+let data = JSON.parse(localStorage.getItem("reviews")) || [];
+
+/* Ensure unique IDs */
+data.forEach((d,i)=>{
+if(!d.id){
+d.id = Date.now()+i;
+}
+});
+localStorage.setItem("reviews",JSON.stringify(data));
+
+function save(){
+localStorage.setItem("reviews",JSON.stringify(data));
+}
+
+function getReviews(){
+return data.filter(d=>d.type==="review");
+}
+
+function getMoments(){
+return data.filter(d=>d.type==="moment");
+}
+
+/* ================= STATS ================= */
+
+function updateStats(){
+
+let reviews=getReviews();
+let moments=getMoments();
+
+document.getElementById("totalReviews").innerText=reviews.length;
+document.getElementById("totalMoments").innerText=moments.length;
+
+let problems=reviews.filter(r=>r.problem);
+document.getElementById("problemCount").innerText=problems.length;
+
+if(reviews.length>0){
+let avg=reviews.reduce((a,b)=>a+b.rating,0)/reviews.length;
+document.getElementById("avgCampus").innerText=avg.toFixed(1)+" ★";
+}else{
+document.getElementById("avgCampus").innerText="0.0 ★";
+}
+}
+
+/* ================= ALERTS ================= */
+
+function renderAlerts(){
+let alertPanel=document.getElementById("alertPanel");
+alertPanel.innerHTML="";
+
+let problems=getReviews().filter(r=>r.problem);
+
+problems.forEach(p=>{
+let div=document.createElement("div");
+div.className="alert";
+div.innerText=`${p.mess} reported issue in ${p.category}`;
+alertPanel.appendChild(div);
+});
+}
+
+/* ================= FILTERING ================= */
+
+function getFiltered(){
+
+let reviews=getReviews();
+
+let mess=document.getElementById("filterMess").value;
+let cat=document.getElementById("filterCategory").value;
+let prob=document.getElementById("filterProblem").value;
+let search=document.getElementById("searchInput").value.toLowerCase();
+
+let filtered=reviews.filter(r=>
+(!mess || r.mess===mess) &&
+(!cat || r.category===cat) &&
+(prob==="" || String(r.problem)===prob) &&
+(!search || r.name.toLowerCase().includes(search) || r.text.toLowerCase().includes(search))
+);
+
+/* Sort High → Low */
+filtered.sort((a,b)=>b.rating-a.rating);
+
+return filtered;
+}
+
+/* ================= TABLE ================= */
+
+function renderTable(){
+
+let list=getFiltered();
+let table=document.getElementById("adminTable");
+table.innerHTML="";
+
+if(list.length===0){
+table.innerHTML=`<tr><td colspan="7" class="empty">No matching records found.</td></tr>`;
+return;
+}
+
+list.forEach(r=>{
+
+let row=document.createElement("tr");
+
+if(r.problem){
+row.classList.add("highlight");
+}
+
+row.innerHTML=`
+<td>${r.mess}</td>
+<td>${r.name}</td>
+<td>${r.category}</td>
+<td>${"★".repeat(r.rating)}</td>
+<td>${r.text}</td>
+<td>${r.problem?'<span class="problem-tag">Under Review</span>':'Normal'}</td>
+<td>
+${r.problem
+? `<button onclick="toggleProblem(${r.id})">Resolve</button>`
+: `<button onclick="toggleProblem(${r.id})" style="background:var(--warning);">Mark Problem</button>`}
+<button onclick="deleteReview(${r.id})" style="background:var(--danger);">Delete</button>
+</td>
+`;
+
+table.appendChild(row);
+});
+}
+
+/* ================= ACTIONS ================= */
+
+function toggleProblem(id){
+let item=data.find(d=>d.id===id);
+if(item){
+item.problem=!item.problem;
+}
+save();
+updateStats();
+renderAlerts();
+renderTable();
+}
+
+function deleteReview(id){
+if(confirm("Delete this review permanently?")){
+data=data.filter(d=>d.id!==id);
+save();
+updateStats();
+renderAlerts();
+renderTable();
+}
+}
+
+/* ================= FILTER LISTENERS ================= */
+
+document.getElementById("filterMess").addEventListener("change",renderTable);
+document.getElementById("filterCategory").addEventListener("change",renderTable);
+document.getElementById("filterProblem").addEventListener("change",renderTable);
+document.getElementById("searchInput").addEventListener("input",renderTable);
+
+/* Populate Mess Dropdown */
+let messSet=[...new Set(getReviews().map(r=>r.mess))];
+let filterMess=document.getElementById("filterMess");
+
+messSet.forEach(m=>{
+let option=document.createElement("option");
+option.value=m;
+option.innerText=m;
+filterMess.appendChild(option);
+});
+
+/* INITIAL LOAD */
+updateStats();
+renderAlerts();
+renderTable();
+
+</script>
+
+</body>
+</html>
